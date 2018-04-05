@@ -327,15 +327,13 @@
   // instead if possible.
   _.memoize = function(func) {
     let resultsObj = {};
-    //console.log( arguments)
 
     return function() {
-      //console.log(`${arguments[0]} ${arguments[1]}`)
-      if (!resultsObj[arguments[0]]) {
-        resultsObj[arguments[0]] = func.apply(this, arguments);
+      let funcArgs = _.map(arguments, arg => arg).join(' ');
+      if (!resultsObj[funcArgs]) {
+        resultsObj[funcArgs] = func.apply(this, arguments);
       }
-     // console.log(resultsObj)
-      return resultsObj[arguments[0]];
+      return resultsObj[funcArgs];
     };
   };
 
@@ -345,7 +343,12 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
-  _.delay = function(func, wait) {};
+  _.delay = function(func, wait) {
+    let funcArgs = _.map(arguments, arg => arg).slice(2);
+    setTimeout(function() {
+      func.apply(this, funcArgs);
+    }, wait);
+  };
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -357,8 +360,18 @@
   // TIP: This function's test suite will ask that you not modify the original
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
-  _.shuffle = function(array) {};
-
+  _.shuffle = function(array) {
+    let inputArrayCopy = array.slice();
+    let shuffledArr = new Array(array.length);
+    let chosenIndex;
+    for (let i = 0; i < shuffledArr.length; i++){
+      chosenIndex = Math.floor((Math.random() * inputArrayCopy.length));
+      shuffledArr[i] = inputArrayCopy[chosenIndex];
+      inputArrayCopy.splice(chosenIndex, 1);
+    }
+    return shuffledArr;
+  };
+  
   /**
    * ADVANCED
    * =================
